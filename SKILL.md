@@ -38,8 +38,7 @@ EXAMPLES:
 ## Startup
 
 1. Read CLAUDE.md and project memory (MEMORY.md) from the working directory.
-2. **Read the `/code-quality` and `/reduce-my-diff` skills in full before anything else**, and confirm you read both. Phases 3 and 4 execute them.
-3. Verify `gh auth status`.
+2. Verify `gh auth status`.
 
 ## Parse Arguments
 
@@ -153,8 +152,8 @@ Trace every changed file to a specific ticket requirement.
 
 ## Fix Mode Decision
 
-- **`commit-fixes`** (default): small, focused PRs. Apply fixes as each skill directs. Commit them separately from feature commits, with messages like `quality: fix [description]`, and report per commit.
-- **`draft-only`**: large or judgment-heavy PRs. Run both skills report-only. Commit nothing; number every finding for the user to pick.
+- **`commit-fixes`** (default): small, focused PRs. Apply fixes for the findings. Commit them separately from feature commits, with messages like `quality: fix [description]`, and report per commit.
+- **`draft-only`**: large or judgment-heavy PRs. Report only. Commit nothing; number every finding for the user to pick.
 
 Use `draft-only` if **any** of these is true, or if it is borderline:
 - The PR touches > ~20 files or > ~1000 lines
@@ -166,17 +165,7 @@ State the mode in the report. Compute the diff against the **merge base**, after
 
 ---
 
-## Phase 3: Code Quality
-
-Execute the `/code-quality` skill on the PR's branch, exactly as written. It is the only source for what this step checks, fixes, and reports. If it is unavailable, use `/simplify` or the model's equivalent review tool, and say so in the report.
-
-## Phase 4: Reduce My Diff
-
-Execute the `/reduce-my-diff` skill on the PR, exactly as written, under the same rule. Its approval rules still hold in `commit-fixes` mode.
-
----
-
-## Phase 5: Review Checks
+## Phase 3: Review Checks
 
 Reconcile prior feedback before fixing anything.
 
@@ -247,7 +236,7 @@ In monorepos, run tests per workspace.
 
 ---
 
-## Phase 6: Report
+## Phase 4: Report
 
 Fixed section order. Every section is mandatory; write "None" rather than dropping a header.
 
@@ -282,14 +271,6 @@ Per Phase 2 Implicit Requirements category that applies, with file:line: each sc
 
 If none: "None."
 
-### Code Quality
-
-The `/code-quality` report, in the format that skill defines. State the fix mode, and list each `quality:` commit, or "None. Drafted findings only, awaiting user triage." in `draft-only` mode.
-
-### Diff Reduction
-
-The `/reduce-my-diff` report, in the format that skill defines.
-
 ### Unsafe Access
 
 One line per access the sweep cleared, plus an Issues row for each it did not. Required even when all is safe.
@@ -322,7 +303,7 @@ Lower-signal observations not worth a fix or comment, with file:line.
 **Stats**
 - Requirements: X/Y met (or "N/A, spike ticket")
 - Gaps: N found
-- Quality fixes: N applied (or `0, draft-only mode`)
+- Fixes: N applied (or `0, draft-only mode`)
 - Scope creep: `none` | `N items flagged`
 - Recommendation: one of
   - `ready for human review`
@@ -363,8 +344,8 @@ Format (the Issue cell is one or two sentences: what changes, then what breaks a
 
 **Type values** (exactly one per row; if a finding fits two, pick the first in this order):
 - `Functionality`: the fix changes what deployed code does. Requirement gaps, bugs, unsafe access that crashes or renders `undefined` or `NaN`, failing tests or CI, schema drift that lets bad data through, and scope creep that changes behavior.
-- `Code quality`: works, but harder to read, change, or run than needed. Every `/code-quality` finding, plus dead code, stale references, duplication, missing test coverage, and performance work.
-- `Diff reduction`: larger than the task needs. Every `/reduce-my-diff` finding, plus scope creep that does not change behavior.
+- `Code quality`: works, but harder to read, change, or run than needed. Dead code, stale references, duplication, missing test coverage, and performance work.
+- `Diff reduction`: larger than the task needs. Scope creep that does not change behavior, and tests or code the task did not need.
 
 **Human flagged? values:**
 - `No`: this review found it independently.
