@@ -314,7 +314,7 @@ Lower-signal observations not worth a fix or comment, with file:line.
 
 List **every** finding from every phase, even if an earlier section already lists it. This is the canonical triage list. Number top to bottom by priority:
 
-1. **Critical**: blocking and high priority are one tier. Missing AC, failing CI, a test that can never pass (undefined imports), TS compile error, security issue, data loss risk, resource leak, clear bug, requirement gap, behavior-changing scope creep, unsafe parallel-schema divergence. Every row blocks the merge.
+1. **Critical**: blocking and high priority are one tier. Missing AC (except test asks, see below), failing CI, a test that can never pass (undefined imports), TS compile error, security issue, data loss risk, resource leak, clear bug, requirement gap, behavior-changing scope creep, unsafe parallel-schema divergence. Every row blocks the merge.
 2. **Medium**: performance work (unbounded or repeated query, avoidable scan, hot-path allocation), code-quality findings, implicit requirement misses, duplicated construction that will drift, stale references to removed concepts.
 3. **Low**: minor duplication, review notes worth mentioning.
 
@@ -328,6 +328,8 @@ List **every** finding from every phase, even if an earlier section already list
 - Code shared by tests and production (a constant, prompt, schema, or helper both paths read). Rank it on the production consequence, and name the production path.
 
 When the ceiling is doing work, state it in the row: `Medium (test-only)`.
+
+**Test asks are not Critical.** An AC or D-requirement that asks for testing, evals, QA or proof (before/after comparisons, "functional tests show X is as good") is not a code requirement. When the PR shows no evidence of it, rank it Medium at most, and say the evidence may live on the ticket or in the ledger. Do not raise it when a code finding already covers the same risk; name that row instead. Its AC row in the requirements table reads `NOT SHOWN`, not `NOT MET`.
 
 Format (the Issue cell is one or two sentences: what changes, then what breaks and for whom):
 
