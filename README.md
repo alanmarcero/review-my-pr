@@ -1,6 +1,6 @@
 # review-my-pr
 
-A Claude Code skill that reviews a PR against its Jira ticket before human reviewers see it. It reads the ticket first, maps each requirement to the diff, runs the `/code-quality` and `/reduce-my-diff` skills, checks prior human and Cursor Bugbot comments against current code, and runs the tests. It does not read the implementation or test plans, so it can catch gaps they missed.
+A Claude Code skill that reviews a PR against its Jira ticket before human reviewers see it. It reads the ticket first, maps each requirement to the diff, checks prior human and Cursor Bugbot comments against current code, and runs the tests. It does not read the implementation or test plans, so it can catch gaps they missed.
 
 ## Install
 
@@ -13,7 +13,6 @@ cp SKILL.md ~/.claude/skills/review-my-pr/
 
 ## Requirements
 
-- The `code-quality` and `reduce-my-diff` skills, installed in `~/.claude/skills/`. Phases 3 and 4 run them as written. Without `code-quality`, the review falls back to `/simplify` and says so in the report.
 - The `gh` CLI, logged in with read access to the repo.
 - Jira access through the Atlassian MCP server or the Jira API, to read the ticket.
 
@@ -36,7 +35,7 @@ In both modes, the skill does not push and does not post comments to GitHub.
 
 ## Report
 
-The report has a fixed set of sections: ticket context, requirement coverage, gaps, implicit requirements, code quality, diff reduction, unsafe access, tests, scope creep, review notes, and a summary.
+The report has a fixed set of sections: ticket context, requirement coverage, gaps, implicit requirements, unsafe access, tests, scope creep, review notes, and a summary.
 
 The summary always ends with one table of every finding, in priority order:
 
