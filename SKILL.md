@@ -348,17 +348,18 @@ List **every** finding from every phase, even if an earlier section already list
 
 When the ceiling is doing work, state it in the row: `Medium (test-only)`.
 
-Format:
+Format (the Issue cell is one or two sentences: what changes, then what breaks and for whom):
 
 | # | Priority | Type | Issue | Location | Human flagged? | Cursor-bot? |
 |---|----------|------|-------|----------|----------------|-------------|
-| 1 | Critical | Functionality | <one sentence of consequence, not just pattern> | src/api/client.ts:42 | No | No |
-| 2 | Critical | Functionality | Null deref possible when `user.profile` is undefined | src/user.ts:42 | Yes, @reviewer | Yes, flagged |
-| 3 | Medium | Code quality | Builds the same request config in three handlers, so a header change must land three times | src/api/handlers.ts:88 | Yes, @reviewer (missed by this review) | No |
-| 4 | Medium | Code quality | Re-runs an unbounded table scan on every page load | src/reports/query.ts:12 | No | No |
-| 5 | Low | Diff reduction | Reformats 40 untouched lines in a file the ticket does not need | src/routes.ts:10 | No | No |
+| 1 | Medium | Functionality | Every phone greeting changes from MP3 to a ~6x larger WAV, and no real Twilio call has played it. If `<Play>` fails, callers lose the greeting silently while labs marks it served. | startup-audio.ts:274 | No | No |
+| 2 | Medium (test-only) | Code quality | The timeout (504), non-completed response and early socket close exits have no test, so a regression in any of them would pass CI | startup-audio.ts:238,248,281 | No | No |
+| 3 | Medium | Functionality | Voice eval speech still uses gpt-4o-mini-tts-2025-12-15, and nothing tracks moving it. If that snapshot retires on 2027-01-06, voice evals break. | packages/ai/lib/live-eval-transport.ts:10 | No | No |
+| 4 | Medium | Code quality | The production greeting path now imports its sample rate and WAV encoder from `@repo/voice/eval-audio`, so a change to eval audio silently changes phone greetings | startup-audio.ts:8 | No | No |
+| 5 | Low | Diff reduction | Four WAV-header asserts re-test `encodeEvalWav`, which has its own suite | startup-audio.test.ts:166-169 | No | No |
+| 6 | Low | Functionality | An odd-length PCM buffer throws a RangeError inside the socket listener instead of returning a 502 | startup-audio.ts:255 | No | No |
 
-**This table is mandatory in every report.** Never replace it with prose or a bullet list. With zero findings, keep the header and write one row: `| - | - | - | None | - | - | - |`.
+**This table is mandatory in every response that reports findings**: the first report, every follow-up turn that re-checks findings, and every turn after fixes land. Print it in the chat response as a Markdown table under the heading `Issues & Concerns (priority order)`, with these seven columns in this order. Print it there even when the full report also goes to a file or a droplet. Never replace it with prose or a bullet list. With zero findings, keep the header and write one row: `| - | - | - | None | - | - | - |`.
 
 **Type values** (exactly one per row; if a finding fits two, pick the first in this order):
 - `Functionality`: the fix changes what deployed code does. Requirement gaps, bugs, unsafe access that crashes or renders `undefined` or `NaN`, failing tests or CI, schema drift that lets bad data through, and scope creep that changes behavior.
