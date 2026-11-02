@@ -348,17 +348,18 @@ List **every** finding from every phase, even if an earlier section already list
 
 When the ceiling is doing work, state it in the row: `Medium (test-only)`.
 
-Format:
+Format (the Issue cell is one or two sentences: what changes, then what breaks and for whom):
 
 | # | Priority | Type | Issue | Location | Human flagged? | Cursor-bot? |
 |---|----------|------|-------|----------|----------------|-------------|
-| 1 | Critical | Functionality | <one sentence of consequence, not just pattern> | src/api/client.ts:42 | No | No |
-| 2 | Critical | Functionality | Null deref possible when `user.profile` is undefined | src/user.ts:42 | Yes, @reviewer | Yes, flagged |
-| 3 | Medium | Code quality | Builds the same request config in three handlers, so a header change must land three times | src/api/handlers.ts:88 | Yes, @reviewer (missed by this review) | No |
-| 4 | Medium | Code quality | Re-runs an unbounded table scan on every page load | src/reports/query.ts:12 | No | No |
-| 5 | Low | Diff reduction | Reformats 40 untouched lines in a file the ticket does not need | src/routes.ts:10 | No | No |
+| 1 | Critical | Functionality | Removes the null check on `user.profile` in the profile loader. Any user without a saved profile crashes `/settings` with a TypeError. | src/api/client.ts:42 | Yes, @reviewer | Yes, flagged |
+| 2 | Medium | Code quality | Builds the same request config in three handlers, so a header change must land three times without shared defaults | src/api/handlers.ts:88 | Yes, @reviewer (missed by this review) | No |
+| 3 | Medium (test-only) | Code quality | The timeout (504) and empty-body fallback branches in the mock client have no test, so a fixture regression would pass CI | src/api/client.test.ts:115 | No | No |
+| 4 | Medium | Functionality | The export endpoint switches pagination from cursor-based to offset-based, and nothing updates the scheduled sync job. Duplicate rows appear when records are inserted mid-sync. | src/reports/query.ts:12 | No | No |
+| 5 | Low | Diff reduction | Reformats 40 untouched lines in a router file the ticket does not need | src/routes.ts:10 | No | No |
+| 6 | Low | Functionality | Passing a negative limit to `parsePageSize` throws a RangeError instead of returning a 400 validation error | src/api/pagination.ts:27 | No | No |
 
-**This table is mandatory in every report.** Never replace it with prose or a bullet list. With zero findings, keep the header and write one row: `| - | - | - | None | - | - | - |`.
+**This table is mandatory in every response that reports findings**: the first report, every follow-up turn that re-checks findings, and every turn after fixes land. Print it in the chat response as a Markdown table under the heading `Issues & Concerns (priority order)`, with these seven columns in this order. Print it there even when the full report also goes to a file. Never replace it with prose or a bullet list. With zero findings, keep the header and write one row: `| - | - | - | None | - | - | - |`.
 
 **Type values** (exactly one per row; if a finding fits two, pick the first in this order):
 - `Functionality`: the fix changes what deployed code does. Requirement gaps, bugs, unsafe access that crashes or renders `undefined` or `NaN`, failing tests or CI, schema drift that lets bad data through, and scope creep that changes behavior.

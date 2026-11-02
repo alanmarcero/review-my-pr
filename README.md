@@ -44,9 +44,9 @@ The summary always ends with one table of every finding, in priority order:
 |--------|--------|
 | Priority | Critical, Medium, Low |
 | Type | Functionality, Code quality, Diff reduction |
-| Issue | The consequence, in one sentence |
+| Issue | What changes, then what breaks and for whom, in one or two sentences |
 | Location | `file:line` |
 | Human flagged? | Whether a human reviewer raised it, and whether this review missed it |
 | Cursor-bot? | Whether Cursor Bugbot raised it |
 
-The table is present even when there are no findings.
+The table is present even when there are no findings. Every response that reports findings prints it in the chat, including follow-up turns and turns after fixes land, even when the full report also goes to a file.
