@@ -1,6 +1,6 @@
 # review-my-pr
 
-A Claude Code skill that reviews a PR against its Jira ticket before human reviewers see it. It reads the ticket first, maps each requirement to the diff, checks prior human and Cursor Bugbot comments against current code, and runs the tests. It does not read the implementation or test plans, so it can catch gaps they missed.
+A Claude Code skill that reviews a PR against its Jira ticket before human reviewers see it. It reads the ticket first, maps each requirement to the diff, checks prior human and Cursor Bugbot comments against current code, runs the tests, and probes the change with a few inputs the tests do not cover. It does not read the implementation or test plans, so it can catch gaps they missed.
 
 ## Install
 
@@ -35,7 +35,7 @@ In both modes, the skill does not push and does not post comments to GitHub.
 
 ## Report
 
-The report has a fixed set of sections: ticket context, requirement coverage, gaps, implicit requirements, unsafe access, tests, scope creep, review notes, and a summary.
+The report has a fixed set of sections: ticket context, requirement coverage, gaps, implicit requirements, unsafe access, tests, probes, scope creep, review notes, and a summary.
 
 The summary always ends with one table of every finding, in priority order:
 

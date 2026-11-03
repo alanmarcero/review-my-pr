@@ -234,6 +234,18 @@ In monorepos, run tests per workspace.
 - Passes on `main` but fails on HEAD is Critical; fails on both is pre-existing.
 - `TypeError: X is not a function` or `X is undefined` means a broken import. Report it as **Critical**: the suite fails CI.
 
+### Probes: light e2e beyond the PR's tests
+
+The PR's tests cover what the author thought to check. Run the change with a few inputs they did not write, to find what it breaks next to what it fixes.
+
+- Pick inputs from the change. For a prompt or parser: near misses, phrasings the new rule should leave alone, and inputs the old code handled. For an endpoint or handler: the request a real client sends, a missing field, and a repeat call. For UI: load the page the diff touches and use the changed control once.
+- Run each probe on the PR head and on `main`, in the same window. A finding is a result that changed and should not have, or one that should have changed and did not.
+- Run each probe that calls a model at least twice per side. Report a change only when the reps agree.
+- Keep it to a few minutes: a throwaway test file, a script, a curl, or a short browser pass. Do not seed shared data, send real messages, or call production.
+- Work in a scratch worktree. Do not commit or push probe files, and do not leave them in the PR branch or a checkout someone else uses. Remove the worktree when done.
+- If a probe needs a key that the repo's tests read from env, take it from the documented source and pass it inline. Never print it or write it to disk.
+- A probe finding is about production behavior, so the test-only cap does not apply. Name the input, the `main` result and the head result in the Issue cell.
+
 ---
 
 ## Phase 4: Report
@@ -287,6 +299,10 @@ Per package:
 - `packages/bar`: N pass, 0 fail.
 
 Include type-check per package if run. A TS error the PR caused is Critical, even in a test file the diff did not touch.
+
+### Probes
+
+One line per probe: the input, the `main` result, the head result, and the rep count. If none ran, write "None run" and the reason.
 
 ### Scope Creep
 
